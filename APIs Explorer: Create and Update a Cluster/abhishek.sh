@@ -69,6 +69,8 @@ echo
 echo "${GREEN}✓ Dataproc API successfully enabled!${RESET}"
 echo
 
+wait=25
+
 # Create Dataproc Cluster
 echo "${BLUE}${BOLD}Step 4: Creating Dataproc Cluster${RESET}"
 echo "${YELLOW}This process may take several minutes to complete.${RESET}"
