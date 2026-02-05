@@ -1,0 +1,57 @@
+
+export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+
+
+git clone https://github.com/GoogleCloudPlatform/gke-tracing-demo
+cd gke-tracing-demo
+
+gcloud config set compute/region $REGION
+gcloud config set compute/zone $ZONE
+echo $REGION
+echo $ZONE
+
+
+cd terraform
+
+nano provider.tf
+
+---
+
+
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+      version = "3.84.0" 
+    }
+  }
+}
+provider "google" {
+  project = var.project
+}
+
+
+---
+
+terraform init
+
+../scripts/generate-tfvars.sh
+gcloud config list
+
+terraform plan
+terraform apply
+
+
+kubectl apply -f tracing-demo-deployment.yaml
+
+echo http://$(kubectl get svc tracing-demo -n default -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+?string=CustomMessage
+
+
+
+
+
